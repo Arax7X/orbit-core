@@ -1,0 +1,27 @@
+{
+  "name": "orbit-core",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Open-source live satellite tracker: a 3D globe of every active satellite, with pass predictions for any city.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "oxlint",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "react-globe.gl": "^2.38.0",
+    "satellite.js": "^5.0.0",
+    "solar-calculator": "^0.3.0",
+    "three": "^0.185.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^6.0.3",
+    "oxlint": "^1.71.0",
+    "vite": "^8.1.1"
+  }
+}
