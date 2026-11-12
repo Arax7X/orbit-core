@@ -1,0 +1,528 @@
+.app {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: #000010;
+}
+
+.hud,
+.passes {
+  position: absolute;
+  top: 68px; /* clear the fixed 56px nav bar */
+  z-index: 10;
+  padding: 16px 20px;
+  border: 1px solid rgba(0, 229, 255, 0.25);
+  border-radius: 12px;
+  background: rgba(8, 12, 28, 0.62);
+  backdrop-filter: blur(6px);
+  color: #e8f1ff;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.hud {
+  left: 20px;
+  width: 250px;
+}
+
+.passes {
+  right: 20px;
+  width: 290px;
+  max-height: calc(100vh - 88px);
+  overflow-y: auto;
+}
+
+.hud h1,
+.passes h2 {
+  margin: 0 0 12px;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: #00e5ff;
+}
+
+.search,
+.loc {
+  margin: 0 0 10px;
+}
+
+.loc {
+  display: flex;
+  gap: 8px;
+}
+
+.search input,
+.loc input {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid rgba(120, 150, 200, 0.35);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.35);
+  color: #e8f1ff;
+  font: inherit;
+  font-size: 12px;
+  outline: none;
+}
+
+.search input:focus,
+.loc input:focus {
+  border-color: #00e5ff;
+}
+
+.loc button {
+  flex: 0 0 auto;
+  padding: 0 10px;
+  border: 1px solid rgba(120, 150, 200, 0.35);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.35);
+  color: #e8f1ff;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.loc button:hover {
+  border-color: #00e5ff;
+}
+
+.capital-select {
+  width: 100%;
+  margin: 0 0 10px;
+  padding: 8px 10px;
+  border: 1px solid rgba(120, 150, 200, 0.35);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.35);
+  color: #e8f1ff;
+  font: inherit;
+  font-size: 12px;
+  outline: none;
+  cursor: pointer;
+}
+
+.capital-select:focus {
+  border-color: #00e5ff;
+}
+
+/* native dropdown list colours (honoured by most browsers) */
+.capital-select option,
+.capital-select optgroup {
+  background: #0a1024;
+  color: #e8f1ff;
+}
+
+.muted {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.5;
+  color: #6f7fa6;
+}
+
+.err {
+  margin: 0;
+  font-size: 11px;
+  color: #ff8080;
+}
+
+.load-err {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.retry-btn {
+  padding: 6px 14px;
+  border: 1px solid rgba(0, 229, 255, 0.4);
+  border-radius: 8px;
+  background: rgba(0, 229, 255, 0.12);
+  color: #00e5ff;
+  font: 600 12px ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.retry-btn:hover {
+  background: rgba(0, 229, 255, 0.2);
+}
+
+.loc-label {
+  margin: 0 0 10px;
+  font-size: 12px;
+  color: #aab8d8;
+}
+
+.loc-label strong {
+  color: #e8f1ff;
+}
+
+/* selected-satellite readout (left panel) */
+.sel {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(120, 150, 200, 0.2);
+}
+
+.sel-name {
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #00e5ff;
+  word-break: break-word;
+}
+
+.sel dl {
+  margin: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.sel dl > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.sel dt {
+  color: #7c8db5;
+}
+
+.sel dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+/* pass list (right panel) */
+.pass-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 8px;
+}
+
+.pass-list li {
+  padding: 10px 12px;
+  border: 1px solid rgba(120, 150, 200, 0.18);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.pass-list li.vis {
+  border-color: rgba(120, 230, 160, 0.5);
+  background: rgba(40, 90, 60, 0.28);
+}
+
+.pass-list .row1 {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.pass-list .when {
+  font-size: 13px;
+  font-weight: 600;
+  color: #e8f1ff;
+}
+
+.pass-list .rel {
+  font-size: 11px;
+  color: #7c8db5;
+}
+
+.pass-list .row2 {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 4px;
+  font-size: 11px;
+  color: #aab8d8;
+  font-variant-numeric: tabular-nums;
+}
+
+.pass-list .badge {
+  display: inline-block;
+  margin-top: 8px;
+  font-size: 10.5px;
+  letter-spacing: 0.03em;
+  color: #8ef0b0;
+}
+
+.pass-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.share-btn,
+.ics-btn {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid rgba(0, 229, 255, 0.4);
+  border-radius: 8px;
+  background: rgba(0, 229, 255, 0.12);
+  color: #00e5ff;
+  font: 600 12px ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.share-btn:hover,
+.ics-btn:hover {
+  background: rgba(0, 229, 255, 0.2);
+}
+
+/* ---------------------------------------------------------------------------
+   Phone layout
+
+   On a desktop the two panels float in the top corners and the three wrappers
+   below simply are not there (display: contents), so the rules above apply
+   exactly as they always did.
+
+   On a small screen there is no room for two floating panels: at 390px wide
+   "Overhead passes" used to sit on top of "Satellite Tracker". There the
+   panels share one sheet docked to the bottom edge, with a tab for each. The
+   sheet starts closed, so the globe has the whole screen and stays free to
+   drag and pinch; a tab pulls it up to a fixed height, so nothing jumps when
+   switching between the two.
+   ------------------------------------------------------------------------ */
+.panels,
+.sheet-body {
+  display: contents;
+}
+
+.sheet-bar {
+  display: none;
+}
+
+@media (max-width: 700px), (max-height: 500px) and (max-width: 950px) {
+  .panels {
+    --sheet-h: min(46vh, 380px);
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    /* keep clear of the home bar and, sideways, the notch */
+    padding: 0 env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    border-top: 1px solid rgba(0, 229, 255, 0.25);
+    border-radius: 16px 16px 0 0;
+    background: rgba(8, 12, 28, 0.84);
+    backdrop-filter: blur(10px);
+    color: #e8f1ff;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+
+  .sheet-bar {
+    display: flex;
+    gap: 4px;
+    padding: 6px;
+  }
+
+  .sheet-tabs {
+    flex: 1 1 auto;
+    display: flex;
+    gap: 4px;
+    min-width: 0;
+  }
+
+  .sheet-tab,
+  .sheet-toggle {
+    min-height: 48px;
+    border: 0;
+    border-radius: 12px;
+    background: none;
+    color: #aab8d8;
+    font: inherit;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition:
+      background 0.15s,
+      color 0.15s;
+  }
+
+  .sheet-tab {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+    padding: 6px 12px;
+    text-align: left;
+  }
+
+  .sheet-tab-title {
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+
+  .sheet-tab-note {
+    overflow: hidden;
+    font-size: 12px;
+    color: #8e9dc2;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .sheet-tab[aria-selected='true'] {
+    background: rgba(0, 229, 255, 0.16);
+    color: #00e5ff;
+  }
+
+  .sheet-toggle {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 48px;
+    padding: 0;
+  }
+
+  .sheet-toggle svg {
+    transition: transform 0.26s ease;
+  }
+
+  .panels.is-open .sheet-toggle svg {
+    transform: rotate(180deg);
+  }
+
+  .sheet-tab:focus-visible,
+  .sheet-toggle:focus-visible {
+    outline: 2px solid #00e5ff;
+    outline-offset: -2px;
+  }
+
+  /* Closed, the body is zero-height and also `visibility: hidden`, so the
+     controls inside cannot be reached by keyboard or a screen reader. */
+  .sheet-body {
+    display: block;
+    height: 0;
+    overflow: hidden;
+    visibility: hidden;
+    transition:
+      height 0.26s cubic-bezier(0.2, 0.8, 0.2, 1),
+      visibility 0s linear 0.26s;
+  }
+
+  .panels.is-open .sheet-body {
+    height: var(--sheet-h);
+    visibility: visible;
+    transition:
+      height 0.26s cubic-bezier(0.2, 0.8, 0.2, 1),
+      visibility 0s;
+  }
+
+  .hud,
+  .passes {
+    position: static;
+    display: none;
+    width: auto;
+    height: var(--sheet-h); /* fixed, so text does not re-wrap while the sheet slides */
+    max-height: none;
+    padding: 10px 16px 20px;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    backdrop-filter: none;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .panels[data-tab='sat'] .hud,
+  .panels[data-tab='passes'] .passes {
+    display: block;
+  }
+
+  /* The tabs already name each panel; keep the headings for screen readers
+     and search engines without spending a line of a small screen on them. */
+  .hud h1,
+  .passes h2 {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+@supports (height: 1dvh) {
+  @media (max-width: 700px), (max-height: 500px) and (max-width: 950px) {
+    .panels {
+      --sheet-h: min(46dvh, 380px);
+    }
+  }
+}
+
+/* A phone held sideways is wide but very short: a full-width sheet would hide
+   the globe, so dock a narrower one in the bottom-left corner and let it use
+   the height under the nav bar. */
+@media (max-height: 500px) and (max-width: 950px) {
+  .panels {
+    --sheet-h: calc(100vh - 56px - 61px - 8px - env(safe-area-inset-bottom));
+    left: max(8px, env(safe-area-inset-left));
+    right: auto;
+    width: min(360px, 48vw);
+    padding-left: 0;
+    padding-right: 0;
+    border: 1px solid rgba(0, 229, 255, 0.25);
+    border-bottom: 0;
+  }
+}
+
+@supports (height: 1dvh) {
+  @media (max-height: 500px) and (max-width: 950px) {
+    .panels {
+      --sheet-h: calc(100dvh - 56px - 61px - 8px - env(safe-area-inset-bottom));
+    }
+  }
+}
+
+/* Sizes for fingers and for reading at arm's length: every control at least
+   44px tall, and form fields at 16px so iOS does not zoom the page when one is
+   tapped. Applies to the phone layout and to any touch screen (tablets keep
+   the desktop layout but get the bigger controls). Every rule starts with
+   .app, the globe page's own wrapper, because Pro, Developers, Embed and
+   Tonight load this stylesheet too and must not change. */
+@media (max-width: 700px), (max-height: 500px) and (max-width: 950px), (pointer: coarse) {
+  .app .search input,
+  .app .loc input,
+  .app .capital-select,
+  .app .loc button {
+    min-width: 48px;
+    min-height: 44px;
+    font-size: 18px;
+  }
+
+  .app .retry-btn,
+  .app .share-btn,
+  .app .ics-btn,
+  .app .muted,
+  .app .err,
+  .app .sel dl {
+    gap: 6px;
+    font-size: 15px;
+  }
+
+  .app .sel-name,
+  .app .pass-list .when {
+    font-size: 15px;
+  }
+
+  .app .pass-list .badge {
+    font-size: 12px;
+  }
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sheet-body,
+  .panels.is-open .sheet-body,
+  .sheet-toggle svg {
+    transition: none;
+  }
+}

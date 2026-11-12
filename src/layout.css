@@ -1,0 +1,636 @@
+:root {
+  --mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+  --panel: rgba(8, 12, 28, 0.55);
+  --line: rgba(120, 150, 200, 0.18);
+}
+
+/* ---- top nav (floats over both globe and content pages) ---- */
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  /* keep clear of a phone's notch when it is held sideways (index.html asks
+     for the full screen with viewport-fit=cover); 20px everywhere else */
+  padding: 0 max(20px, env(safe-area-inset-right)) 0 max(20px, env(safe-area-inset-left));
+  background: linear-gradient(180deg, rgba(2, 4, 14, 0.85), rgba(2, 4, 14, 0));
+  pointer-events: none; /* let clicks fall through to the globe except on the pills */
+}
+
+.nav-brand {
+  flex: none; /* on a phone the links used to squeeze this onto two lines */
+  white-space: nowrap;
+  pointer-events: auto;
+  color: #00e5ff;
+  font: 600 16px var(--mono);
+  letter-spacing: 0.04em;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.7);
+}
+
+.nav-links {
+  pointer-events: auto;
+  display: flex;
+  gap: 4px;
+  padding: 5px;
+  border: 1px solid rgba(0, 229, 255, 0.2);
+  border-radius: 999px;
+  background: rgba(8, 12, 28, 0.62);
+  backdrop-filter: blur(6px);
+  /* The link set outgrew a phone's width once Fleet/Ground/Analytics/Embed
+     landed — it spilled past the viewport with no way to scroll, leaving those
+     routes unreachable on mobile. min-width:0 lets this flex item shrink at all
+     (flex items default to min-width:auto and refuse to), and overflow-x makes
+     the spill swipeable. Deliberately NOT flex-wrap: the nav is a fixed 56px
+     bar that .hud/.passes clear with top:68px, so a second row would overlap
+     the page content below it. */
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none; /* Firefox */
+  -webkit-overflow-scrolling: touch; /* momentum scroll on iOS */
+}
+/* Chrome/Safari: hide the bar — it's swipe/trackpad scrollable, and a visible
+   scrollbar inside a rounded pill looks broken. */
+.nav-links::-webkit-scrollbar {
+  display: none;
+}
+
+.nav-link {
+  flex: 0 0 auto; /* never squish a label or wrap it mid-word when space is tight */
+  white-space: nowrap;
+  padding: 6px 14px;
+  border-radius: 999px;
+  color: #aab8d8;
+  text-decoration: none;
+  font: 500 13px var(--mono);
+  transition: background 0.15s, color 0.15s;
+}
+.nav-link:hover {
+  color: #e8f1ff;
+}
+.nav-link.active {
+  background: rgba(0, 229, 255, 0.16);
+  color: #00e5ff;
+}
+
+/* Phones and other touch screens: the pills were 28px tall, well under the
+   ~44px a fingertip needs. The bar itself stays 56px, so nothing below moves. */
+@media (max-width: 700px), (pointer: coarse) {
+  .nav-links {
+    padding: 3px;
+  }
+  .nav-link {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 14px;
+  }
+}
+
+.route-loading {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #7c8db5;
+  font: 500 14px var(--mono);
+}
+/* Same wording and colour, for the loading states that sit inside a real page
+   shell (.page / .fleet-widget) instead of floating over the globe's black. */
+.route-loading-text {
+  margin: 0;
+  color: #7c8db5;
+  font: 500 14px var(--mono);
+}
+/* The one control on the "this page didn't load" screen
+   (src/components/RouteErrorBoundary.jsx) — styled like the nav's active pill. */
+.route-error-reload {
+  padding: 8px 18px;
+  border: 1px solid rgba(0, 229, 255, 0.35);
+  border-radius: 999px;
+  background: rgba(0, 229, 255, 0.16);
+  color: #00e5ff;
+  font: 500 13px var(--mono);
+  cursor: pointer;
+}
+.route-error-reload:hover {
+  background: rgba(0, 229, 255, 0.26);
+}
+
+/* ---- content-page shell (own fixed scroll layer, so body stays locked) ---- */
+.page {
+  position: fixed;
+  inset: 0;
+  overflow-y: auto;
+  background: radial-gradient(1200px 700px at 75% -15%, #0c1f3c 0%, #050a1c 55%, #02040e 100%);
+  color: #e8f1ff;
+}
+
+.page-inner {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 84px max(24px, env(safe-area-inset-right)) 80px max(24px, env(safe-area-inset-left));
+}
+
+.page-head {
+  margin-bottom: 28px;
+}
+.page-head h1 {
+  margin: 0;
+  font: 600 28px/1.1 var(--mono);
+  letter-spacing: 0.02em;
+}
+.page-sub {
+  margin: 10px 0 0;
+  max-width: 64ch;
+  color: #7c8db5;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.page .muted {
+  color: #7c8db5;
+  font-size: 13px;
+}
+.page .err {
+  color: #ff8080;
+  font-size: 13px;
+  line-height: 1.5;
+  max-width: 64ch;
+}
+
+/* ---- launches ---- */
+.launch-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 18px;
+}
+.launch-card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--panel);
+}
+.launch-img {
+  position: relative;
+  height: 150px;
+  background-size: cover;
+  background-position: center;
+  background-color: #0a1428;
+}
+.status-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font: 600 11px var(--mono);
+  color: #e8f1ff;
+  background: rgba(4, 8, 20, 0.82);
+  border: 1px solid rgba(120, 150, 200, 0.4);
+}
+.status-badge.ok {
+  color: #8ef0b0;
+  border-color: rgba(120, 230, 160, 0.5);
+}
+.status-badge.warn {
+  color: #ffd15c;
+  border-color: rgba(255, 209, 92, 0.5);
+}
+.status-badge.bad {
+  color: #ff8080;
+  border-color: rgba(255, 128, 128, 0.5);
+}
+.launch-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 16px 16px;
+}
+.countdown {
+  font: 700 20px var(--mono);
+  color: #00e5ff;
+  font-variant-numeric: tabular-nums;
+}
+.countdown.live {
+  color: #8ef0b0;
+}
+.launch-name {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.25;
+}
+.launch-meta {
+  margin: 0;
+  display: grid;
+  gap: 4px;
+}
+.launch-meta > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  font-size: 12px;
+}
+.launch-meta dt {
+  color: #7c8db5;
+}
+.launch-meta dd {
+  margin: 0;
+  color: #cdd9f2;
+  text-align: right;
+}
+.launch-when {
+  margin-top: auto;
+  font-size: 12px;
+  color: #aab8d8;
+}
+.watch-link {
+  align-self: flex-start;
+  padding: 7px 14px;
+  border-radius: 8px;
+  text-decoration: none;
+  font: 600 12px var(--mono);
+  color: #ff9a9a;
+  background: rgba(255, 92, 92, 0.16);
+  border: 1px solid rgba(255, 92, 92, 0.4);
+}
+.watch-link:hover {
+  background: rgba(255, 92, 92, 0.26);
+}
+
+/* ---- dashboard ---- */
+.chart-grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 860px) {
+  .chart-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.chart-card {
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--panel);
+}
+.chart-card h2 {
+  margin: 0 0 14px;
+  font: 600 15px var(--mono);
+  color: #00e5ff;
+}
+
+/* dashboard summary stats */
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 14px;
+  margin-bottom: 24px;
+}
+.stat-card {
+  padding: 16px 18px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--panel);
+}
+.stat-value {
+  font: 700 26px var(--mono);
+  line-height: 1.1;
+  color: #e8f1ff;
+  font-variant-numeric: tabular-nums;
+}
+.stat-value.stat-text {
+  font-size: 19px;
+  word-break: break-word;
+}
+.stat-label {
+  margin-top: 6px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #7c8db5;
+}
+.stat-sub {
+  margin-top: 4px;
+  font-size: 12px;
+  color: #00e5ff;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- pro account page ---- */
+.pro-account-card {
+  margin-bottom: 20px;
+}
+.pro-account-card h2 {
+  margin: 0 0 10px;
+  font: 600 15px var(--mono);
+  color: #00e5ff;
+}
+.pro-account-card > input {
+  width: 100%;
+  padding: 9px 12px;
+  margin-bottom: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.3);
+  color: #e8f1ff;
+  font-size: 13px;
+}
+.pro-status-row {
+  display: flex;
+  gap: 32px;
+  margin: 0 0 14px;
+}
+.pro-status-row dt {
+  color: #7c8db5;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.pro-status-row dd {
+  margin: 4px 0 0;
+  font-size: 14px;
+}
+.pro-status-row dd.ok {
+  color: #8ef0b0;
+}
+.pro-status-row dd.warn {
+  color: #ffd15c;
+}
+.pro-search-results,
+.pro-watchlist {
+  margin: 0 0 14px;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 6px;
+}
+.pro-search-results li,
+.pro-watchlist li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.25);
+  font-size: 13px;
+}
+.pro-search-results button,
+.pro-watchlist button {
+  padding: 5px 10px;
+  border: 1px solid rgba(0, 229, 255, 0.4);
+  border-radius: 6px;
+  background: rgba(0, 229, 255, 0.12);
+  color: #00e5ff;
+  font: 600 11px var(--mono);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.pro-search-results button:hover,
+.pro-watchlist button:hover {
+  background: rgba(0, 229, 255, 0.22);
+}
+
+/* ---- developer API ---- */
+.dev-plan-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 18px;
+  margin-bottom: 20px;
+}
+.dev-plan-card {
+  text-align: left;
+}
+.dev-plan-highlight {
+  border-color: rgba(0, 229, 255, 0.5);
+  box-shadow: 0 0 0 1px rgba(0, 229, 255, 0.2) inset;
+}
+.dev-plan-price {
+  font: 700 24px var(--mono);
+  color: #e8f1ff;
+  margin-bottom: 4px;
+}
+.dev-plan-price span {
+  font-size: 13px;
+  color: #7c8db5;
+  font-weight: 500;
+}
+.dev-signup-form {
+  flex-direction: column;
+  align-items: stretch;
+}
+.dev-signup-form select {
+  padding: 8px 10px;
+  border: 1px solid rgba(255, 200, 90, 0.3);
+  border-radius: 7px;
+  background: rgba(0, 0, 0, 0.3);
+  color: #e8f1ff;
+  font-size: 12px;
+}
+.dev-new-key code,
+.pro-watchlist code {
+  margin-left: 6px;
+  padding: 2px 6px;
+  border-radius: 5px;
+  background: rgba(0, 0, 0, 0.35);
+  color: #00e5ff;
+  font-size: 11px;
+  word-break: break-all;
+}
+.dev-code {
+  margin: 0;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.35);
+  color: #cdd9f2;
+  font: 12px/1.6 var(--mono);
+  overflow-x: auto;
+  white-space: pre;
+}
+.dev-branding-row {
+  margin-top: 14px;
+}
+.dev-branding-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #cdd9f2;
+  cursor: pointer;
+}
+.dev-branding-toggle-locked {
+  color: #7c8db5;
+  cursor: not-allowed;
+}
+
+/* ---- fleet monitoring ---- */
+.fleet-list li {
+  align-items: flex-start;
+}
+.fleet-map {
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+}
+.fleet-map-bg {
+  fill: rgba(0, 0, 0, 0.35);
+}
+.fleet-map-grid {
+  stroke: rgba(120, 150, 200, 0.14);
+  stroke-width: 1;
+}
+.fleet-map-equator {
+  stroke: rgba(120, 150, 200, 0.28);
+  stroke-width: 1;
+}
+.fleet-map-empty {
+  fill: #7c8db5;
+  font: 12px var(--mono);
+}
+.fleet-map-dot {
+  fill: #8ef0b0;
+  stroke: rgba(0, 0, 0, 0.6);
+  stroke-width: 1;
+}
+.fleet-map-dot-warn {
+  fill: #ffd15c;
+}
+.fleet-map-dot-bad {
+  fill: #ff8080;
+}
+
+/* ---- white-label fleet widget (src/pages/FleetWidget.jsx, /widget/:token) ----
+   Bare page, no NavBar — meant to be <iframe>d on an external site, so this
+   brings its own compact background/spacing rather than relying on .page. */
+.fleet-widget {
+  min-height: 100vh;
+  padding: 14px 16px 10px;
+  background: radial-gradient(1200px 700px at 75% -15%, #0c1f3c 0%, #050a1c 55%, #02040e 100%);
+  color: #e8f1ff;
+  font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+  box-sizing: border-box;
+}
+.fleet-widget-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.fleet-widget-title {
+  font: 600 15px/1.2 var(--mono);
+  letter-spacing: 0.02em;
+}
+.fleet-widget-badge {
+  font: 700 10px var(--mono);
+  color: #8ef0b0;
+  border: 1px solid rgba(120, 230, 160, 0.5);
+  border-radius: 999px;
+  padding: 2px 8px;
+  letter-spacing: 0.08em;
+}
+.fleet-widget-list {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.fleet-widget-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--line);
+}
+.fleet-widget-footer {
+  display: block;
+  margin-top: 12px;
+  font-size: 11px;
+  color: #7c8db5;
+  text-decoration: none;
+  text-align: right;
+}
+.fleet-widget-footer:hover {
+  color: #00e5ff;
+}
+
+/* ---- ground-station pass scheduler ---- */
+.pro-search-results li {
+  align-items: flex-start;
+}
+
+/* ---- news ---- */
+.news-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+.news-item a {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 12px;
+  border-radius: 10px;
+  text-decoration: none;
+  color: #e8f1ff;
+  border-bottom: 1px solid rgba(120, 150, 200, 0.1);
+}
+.news-item a:hover {
+  background: rgba(0, 229, 255, 0.06);
+}
+.news-src {
+  flex: 0 0 auto;
+  width: 140px;
+  font: 600 11px var(--mono);
+  color: #7c8db5;
+}
+.news-title {
+  flex: 1;
+  font-size: 15px;
+  line-height: 1.3;
+}
+.news-date {
+  flex: 0 0 auto;
+  color: #6f7fa6;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.src-sfn {
+  color: #00e5ff;
+}
+.src-nsf {
+  color: #b05cff;
+}
+.src-esa {
+  color: #8ef0b0;
+}
+@media (max-width: 600px) {
+  .news-item a {
+    flex-wrap: wrap;
+    gap: 4px 12px;
+  }
+  .news-src {
+    width: auto;
+  }
+  .news-title {
+    flex: 1 1 100%;
+    order: 3;
+  }
+}
