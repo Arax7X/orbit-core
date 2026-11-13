@@ -1,8 +1,6 @@
-// Turns predicted passes into a downloadable .ics feed so someone can drop
+// Turns predicted passes into a downloadable .ics file so someone can drop
 // "ISS over London" straight into their phone's calendar instead of having to
-// remember to check back. This is the kind of feature every competitor
-// (Star Walk, ISS Detector, Heavens-Above) locks behind a paid tier — here
-// it's the free hook; live alerts (see notify.js) are the paid one.
+// remember to check back.
 
 function pad(n) {
   return String(n).padStart(2, '0')
