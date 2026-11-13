@@ -486,8 +486,7 @@
    44px tall, and form fields at 16px so iOS does not zoom the page when one is
    tapped. Applies to the phone layout and to any touch screen (tablets keep
    the desktop layout but get the bigger controls). Every rule starts with
-   .app, the globe page's own wrapper, because Pro, Developers, Embed and
-   Tonight load this stylesheet too and must not change. */
+   .app, the globe page's own wrapper, so nothing outside it is affected. */
 @media (max-width: 700px), (max-height: 500px) and (max-width: 950px), (pointer: coarse) {
   .app .search input,
   .app .loc input,
