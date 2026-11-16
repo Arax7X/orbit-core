@@ -11,6 +11,8 @@ your own eyes.
 This is the open-source core of [Orbit](https://satellite-globe.vercel.app),
 which you can try live.
 
+[![Orbit Core: a globe covered in satellites, with the next ISS passes over London listed beside it, two of them marked visible to the eye](docs/screenshot.jpg)](https://satellite-globe.vercel.app)
+
 ## What it does
 
 - **Live positions.** Every active satellite, moving in real time.
